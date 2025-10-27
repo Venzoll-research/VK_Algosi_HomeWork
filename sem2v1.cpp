@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 
-
 template <typename T>
 class LinkedList {
    private:
@@ -16,6 +15,44 @@ class LinkedList {
     size_t list_size;
 
    public:
+    friend LinkedList<T> mergeTwoSortedLists(LinkedList<T>& list1, LinkedList<T>& list2) {
+        LinkedList<T> result;
+
+        if (!list1.head && !list2.head) {
+            return result;
+        }
+
+        Node** result_tail = &result.head;
+        Node* l1 = list1.head;
+        Node* l2 = list2.head;
+
+        while (l1 != nullptr && l2 != nullptr) {
+            if (l1->data <= l2->data) {
+                *result_tail = l1;
+                l1 = l1->next;
+            } else {
+                *result_tail = l2;
+                l2 = l2->next;
+            }
+            result_tail = &((*result_tail)->next);
+        }
+
+        if (l1 != nullptr) {
+            *result_tail = l1;
+        } else {
+            *result_tail = l2;
+        }
+
+        result.list_size = list1.list_size + list2.list_size;
+
+        list1.head = nullptr;
+        list2.head = nullptr;
+        list1.list_size = 0;
+        list2.list_size = 0;
+
+        return result;
+    }
+
     // Конструктор по умолчанию
     LinkedList() : head(nullptr), list_size(0) {}
 
@@ -105,6 +142,22 @@ class LinkedList {
         list_size = 0;
     }
 
+    Node* getHead() const {
+        return head;
+    }
+
+    void setHead(Node* new_head) {
+        head = new_head;
+    }
+
+    size_t getSize() const {
+        return list_size;
+    }
+
+    void setSize(size_t new_size) {
+        list_size = new_size;
+    }
+
     // Вывод списка
     void print() const {
         Node* current = head;
@@ -153,20 +206,20 @@ class LinkedList {
             throw std::runtime_error("List is empty");
         }
 
-        Node* slow = head; 
-        Node* fast = head;  //двигается на 2 элемента
+        Node* slow = head;
+        Node* fast = head;  // двигается на 2 элемента
 
         // Пока быстрый указатель не достиг конца списка
         while (fast && fast->next) {
-            slow = slow->next;        
-            fast = fast->next->next; 
+            slow = slow->next;
+            fast = fast->next->next;
         }
 
         return slow->data;
     }
 
     void removeElement(const T& value) {
-        Node* dummy = new Node(T()); 
+        Node* dummy = new Node(T());
         dummy->next = head;
 
         Node* prev = dummy;
@@ -194,7 +247,7 @@ class Stack {
 
    public:
     void push(const T& value) {
-        list.push_front(value); 
+        list.push_front(value);
     }
 
     T pop() {
@@ -202,8 +255,8 @@ class Stack {
             throw std::runtime_error("Stack is empty");
         }
 
-        T value = list.front();  
-        list.pop_front();        
+        T value = list.front();
+        list.pop_front();
         return value;
     }
 
@@ -254,7 +307,7 @@ class Queue {
         }
 
         T value = list.front();
-        list.pop_front();        
+        list.pop_front();
         return value;
     }
 
@@ -306,7 +359,7 @@ bool isSubsequence(const std::string& a, const std::string& b) {
 
     for (char c : b) {
         if (!q.empty() && q.front() == c) {
-            q.dequeue(); 
+            q.dequeue();
         }
     }
 
@@ -354,7 +407,6 @@ bool isPalindromeTwoPointers(const std::string& s) {
     }
     return true;
 }
-
 
 int main() {
     LinkedList<int> list;
@@ -429,6 +481,19 @@ int main() {
 
     std::cout << isPalindromeTwoPointers(d) << std::endl;
     std::cout << isPalindrome(d) << std::endl;
+
+    LinkedList<int> list1;
+    list1.push_back(1);
+    list1.push_back(3);
+    list1.push_back(5);
+
+    LinkedList<int> list2;
+    list2.push_back(2);
+    list2.push_back(4);
+    list2.push_back(6);
+
+    LinkedList<int> merged = mergeTwoSortedLists(list1, list2);
+    merged.print();  // Вывод: 1 2 3 4 5 6
 
     return 0;
 }
